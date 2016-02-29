@@ -18,6 +18,7 @@ func (jsonBinding) Name() string {
 
 func (jsonBinding) Bind(req *http.Request, obj interface{}) error {
 	decoder := json.NewDecoder(req.Body)
+	decoder.UseNumber()
 	if err := decoder.Decode(obj); err != nil {
 		return err
 	}
