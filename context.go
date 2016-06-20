@@ -306,11 +306,7 @@ func (c *Context) BindWith(obj interface{}, b binding.Binding) error {
 // X-Real-IP and X-Forwarded-For in order to work properly with reverse-proxies such us: nginx or haproxy.
 func (c *Context) ClientIP() string {
 	if c.engine.ForwardedByClientIP {
-		clientIP := strings.TrimSpace(c.requestHeader("X-Real-Ip"))
-		if len(clientIP) > 0 {
-			return clientIP
-		}
-		clientIP = c.requestHeader("X-Forwarded-For")
+		clientIP := c.requestHeader("X-Forwarded-For")
 		if index := strings.IndexByte(clientIP, ','); index >= 0 {
 			clientIP = clientIP[0:index]
 		}
@@ -318,6 +314,10 @@ func (c *Context) ClientIP() string {
 		if len(clientIP) > 0 {
 			return clientIP
 		}
+		clientIP = strings.TrimSpace(c.requestHeader("X-Real-Ip"))
+                if len(clientIP) > 0 {
+                        return clientIP
+                }
 	}
 	if ip, _, err := net.SplitHostPort(strings.TrimSpace(c.Request.RemoteAddr)); err == nil {
 		return ip
